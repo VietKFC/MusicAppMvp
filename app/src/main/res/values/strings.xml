@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">MvpMusicApp</string>
+    <string name="text_load_song_failed">Device has no songs</string>
+    <string name="text_music_infor">%s - %s</string>
+    <string name="text_format_duration">%.2f</string>
+    <string name="text_music_list">Music list</string>
+    <string name="number_zero">0</string>
+    <string name="text_dot">.</string>
+    <string name="text_comma">,</string>
+    <string name="text_colon">:</string>
+
+    <string name="infor_channel_id" >Channel ID</string>
+    <string name="infor_channel_name">Music app</string>
+
+    <string name="intent_play_music">Play action</string>
+    <string name="intent_next_music">Next action</string>
+    <string name="intent_prev_music">Prev action</string>
+    <string name="intent_action">Intent action</string>
+    <string name="intent_data_extra">Intent data</string>
 </resources>
+
