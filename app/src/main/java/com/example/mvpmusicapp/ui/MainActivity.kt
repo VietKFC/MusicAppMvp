@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintSet
 import com.example.mvpmusicapp.R
 import com.example.mvpmusicapp.data.model.Song
@@ -26,7 +27,9 @@ const val TIME_PERIOD = 1000L
 class MainActivity : AppCompatActivity(),
     SongInterface.View,
     View.OnClickListener,
-    ServiceInterface {
+    ServiceInterface,
+    SearchView.OnCloseListener,
+    SearchView.OnQueryTextListener {
 
     private val DURATION_DEFAULT = 0
     private val storageRequest = 100
@@ -34,10 +37,12 @@ class MainActivity : AppCompatActivity(),
     private val musicIntent by lazy { Intent(this, MusicService::class.java) }
     private var songPresenter: SongInterface.Presenter? = null
     private var songs = mutableListOf<Song>()
-    private var songAdapter = SongAdapter(this::clickSong)
+    private var songAdapter = SongAdapter(this::clickSong, this::longClickSong)
     private var boundService = false
     private var currentSong = 0
     private var musicService: MusicService? = null
+    private val deleteSongs = mutableListOf<Song>()
+    private var isReplay = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,11 +93,78 @@ class MainActivity : AppCompatActivity(),
             R.id.imageForward -> nextSongClick()
 
             R.id.imageRewind -> prevSongClick()
+
+            R.id.textDestroy -> {
+                songAdapter.setCheckboxHide(true)
+                binding.apply {
+                    imageDelete.visibility = View.GONE
+                    textDestroy.visibility = View.GONE
+                }
+                deleteSongs.clear()
+            }
+            R.id.imageDelete -> {
+                if (deleteSongs.size == 0) return
+                songs.removeAll(deleteSongs)
+                deleteSongs.forEach {
+                    contentResolver.delete(it.uri, null, null)
+                }
+
+                songAdapter.setSongList(songs)
+
+            }
+
+            R.id.imageSearch -> {
+                binding.apply {
+                    searchSong.visibility = View.VISIBLE
+                    imageSearch.visibility = View.INVISIBLE
+                    textTitle.visibility = View.INVISIBLE
+                }
+            }
+
+            R.id.imageReplay -> {
+                isReplay = !isReplay
+                binding.textReplay.visibility = if (!isReplay) View.GONE else View.VISIBLE
+                musicService?.isReplay = isReplay
+            }
         }
     }
 
     override fun updateProgress(position: Int?) {
         Thread { binding.progressMusic.progress = position ?: DURATION_DEFAULT }.start()
+    }
+
+    override fun onReplayMusic() {
+        songPresenter?.playMusic(musicService?.isMusicPlaying() == true)
+        musicService?.pushNotification()
+    }
+
+    override fun onClose(): Boolean {
+        binding.apply {
+            imageSearch.visibility = View.VISIBLE
+            searchSong.visibility = View.GONE
+            textTitle.visibility = View.VISIBLE
+        }
+        songAdapter.setSongList(songs)
+        return false
+    }
+
+    override fun onQueryTextSubmit(query: String?) = false
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        val songsFilter = mutableListOf<Song>()
+        songs.forEach {
+            if (it.name.contains(newText.toString(), ignoreCase = true)) {
+                songsFilter.add(it)
+            }
+        }
+        songAdapter.setSongList(songsFilter)
+        return false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(musicReceiver)
+        unbindService(serviceConnection)
     }
 
     private val serviceConnection = object : ServiceConnection {
@@ -110,10 +182,19 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun initViews() {
-        listOf(binding.imagePlayMusic, binding.imageForward, binding.imageRewind).forEach {
-            it.setOnClickListener(this)
-        }
+        binding.apply {
+            listOf(
+                imagePlayMusic, imageForward, imageRewind,
+                imageDelete, textDestroy, imageSearch , imageReplay
+            ).forEach {
+                it.setOnClickListener(this@MainActivity)
+            }
 
+            searchSong.apply {
+                setOnCloseListener(this@MainActivity)
+                setOnQueryTextListener(this@MainActivity)
+            }
+        }
         binding.recyclerSong.adapter = songAdapter
     }
 
@@ -237,9 +318,16 @@ class MainActivity : AppCompatActivity(),
         updateProgress()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(musicReceiver)
-        unbindService(serviceConnection)
+    private fun longClickSong(song: Song?) {
+        binding.apply {
+            textDestroy.visibility = View.VISIBLE
+            imageDelete.visibility = View.VISIBLE
+        }
+        if (song?.isSelected == true) {
+            deleteSongs.add(song)
+        } else if (deleteSongs.contains(song)) {
+            deleteSongs.remove(song)
+        }
+
     }
 }

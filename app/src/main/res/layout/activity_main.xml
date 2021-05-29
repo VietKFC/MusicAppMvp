@@ -17,20 +17,72 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageMenu"
-            android:layout_width="@dimen/dp_20"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/dp_20"
-            android:text="@string/text_music_list"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/sp_22" />
+            <ImageView
+                android:id="@+id/imageSearch"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_10"
+                android:src="@drawable/ic_loupe"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchSong"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/dp_30"
+                android:background="@drawable/bg_radius"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/textTitle"
+                app:layout_constraintLeft_toRightOf="@id/imageSearch"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/textTitle" />
+
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:text="@string/text_music_list"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_22"
+                app:layout_constraintBottom_toBottomOf="@id/imageSearch"
+                app:layout_constraintLeft_toRightOf="@id/imageSearch"
+                app:layout_constraintTop_toTopOf="@id/imageSearch" />
+
+            <TextView
+                android:id="@+id/textDestroy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:padding="@dimen/dp_7"
+                android:text="@string/text_x"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_22"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/imageSearch"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/imageSearch" />
+
+            <ImageView
+                android:id="@+id/imageDelete"
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:padding="@dimen/dp_7"
+                android:src="@drawable/ic_delete"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/imageSearch"
+                app:layout_constraintRight_toLeftOf="@id/textDestroy"
+                app:layout_constraintTop_toTopOf="@id/imageSearch" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -43,14 +95,15 @@
         app:layout_constraintBottom_toBottomOf="@id/cardPlayMusic"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbarMain" />
+        app:layout_constraintTop_toBottomOf="@id/toolbarMain"
+        tools:listitem="@layout/song_item" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardPlayMusic"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:cardBackgroundColor="@android:color/black"
+        android:visibility="gone"
         app:cardCornerRadius="@dimen/dp_15"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -103,6 +156,18 @@
                 app:layout_constraintLeft_toRightOf="@id/imageForward"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/imagePlayMusic" />
+
+            <TextView
+                android:id="@+id/textReplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:background="?selectableItemBackground"
+                android:text="@string/text_one"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_14"
+                app:layout_constraintLeft_toRightOf="@id/imageReplay"
+                app:layout_constraintTop_toTopOf="@id/imageReplay" />
 
             <ImageView
                 android:id="@+id/image_music_list"

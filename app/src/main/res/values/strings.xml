@@ -8,6 +8,8 @@
     <string name="text_dot">.</string>
     <string name="text_comma">,</string>
     <string name="text_colon">:</string>
+    <string name="text_x">X</string>
+    <string name="text_one">1</string>
 
     <string name="infor_channel_id" >Channel ID</string>
     <string name="infor_channel_name">Music app</string>

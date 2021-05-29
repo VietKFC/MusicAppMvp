@@ -21,6 +21,7 @@ class MusicService : Service() {
     private var prgCallback: ServiceInterface? = null
     private var notificationManager: NotificationManager? = null
     private var currentSong = 0
+    var isReplay = false
 
     override fun onBind(p0: Intent?): IBinder = MusicBinder(this)
 
@@ -32,6 +33,13 @@ class MusicService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         pushNotification()
         return START_NOT_STICKY
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cancelNotification()
+        musicPlayer?.release()
+        stopSelf()
     }
 
     fun getIntent() = Intent(applicationContext, MusicService::class.java)
@@ -90,6 +98,10 @@ class MusicService : Service() {
             setOnCompletionListener {
                 if (prgCallback != null) {
                     prgCallback?.updateProgress(musicPlayer?.currentPosition)
+                    if(duration == currentPosition && !isReplay){
+                        pauseMusic()
+                        prgCallback?.onReplayMusic()
+                    }
                 }
             }
         }
@@ -103,13 +115,6 @@ class MusicService : Service() {
             this, NotificationManager::class.java
         ) as NotificationManager
         notificationManager.cancelAll()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cancelNotification()
-        musicPlayer?.release()
-        stopSelf()
     }
 
     class MusicBinder(private val service: MusicService) : Binder() {

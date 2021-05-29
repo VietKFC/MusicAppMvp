@@ -8,6 +8,8 @@ import android.provider.MediaStore
 
 class Song(var uri: Uri, var name: String, var artist: String, var duration: Int) {
 
+    var isSelected = false
+
     constructor(cursor: Cursor) : this(
         ContentUris.withAppendedId(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -21,4 +23,5 @@ class Song(var uri: Uri, var name: String, var artist: String, var duration: Int
             0
         }
     )
+
 }
